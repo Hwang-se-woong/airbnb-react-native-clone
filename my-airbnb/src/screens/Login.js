@@ -6,9 +6,7 @@ import {
   ScrollView,
   KeyboardAvoidingView
 } from "react-native";
-import { PropTypes } from "prop-types";
 import colors from "../styles/colors";
-import Icon from "react-native-vector-icons/FontAwesome";
 import InputField from "../components/form/InputField";
 import NextArrowButton from "../components/buttons/NextArrowButton";
 
@@ -19,7 +17,7 @@ export default class Login extends Component {
 
   render() {
     return (
-      <KeyboardAvoidingView style={styles.wrapper}>
+      <KeyboardAvoidingView style={styles.wrapper} behavior="padding">
         <View style={styles.scollViewWrapper}>
           <ScrollView style={styles.scrollView}>
             <Text style={styles.loginHeader}>Log In</Text>
