@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import { PropTypes } from "prop-types";
 import colors from "../../styles/colors";
-import Icon from "react-native-vector-icons/FontAwesome";
 
 export default class InputField extends Component {
   constructor(props) {
