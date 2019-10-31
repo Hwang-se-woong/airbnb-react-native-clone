@@ -15,7 +15,7 @@ export default class Notification extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      positionValue: new Animated.Value(50)
+      positionValue: new Animated.Value(-60)
     };
     this.closeNotification = this.closeNotification.bind(this);
     this.animateNotification = this.animateNotification.bind(this);
@@ -25,11 +25,11 @@ export default class Notification extends Component {
     const { positionValue } = this.state;
     Animated.timing(positionValue, {
       toValue: value,
-      duration: 400,
+      duration: 300,
       velocity: 3,
       tension: 2,
       friction: 8,
-      easing: Easing.ease
+      easing: Easing.easeOutBack
     }).start();
   }
 
@@ -42,13 +42,11 @@ export default class Notification extends Component {
     const { positionValue } = this.state;
     showNotification
       ? this.animateNotification(0)
-      : this.animateNotification(60);
+      : this.animateNotification(-60);
 
     return (
-      <Animated.View
-        style={[{ transform: [{ translateY: positionValue }] }, styles.wrapper]}
-      >
-        <View style={styles.notificationContent}>
+      <Animated.View style={[{ marginBottom: positionValue }, styles.wrapper]}>
+        <View style={styles.errorMessageContainer}>
           <Text style={styles.errorText}> {type} </Text>
           <Text>{firstLine}</Text>
           <Text>{secondLine}</Text>
@@ -74,13 +72,14 @@ Notification.propTypes = {
 
 const styles = StyleSheet.create({
   wrapper: {
+    flex: 1,
     backgroundColor: colors.white,
     height: 60,
-    width: "100%",
     padding: 10
   },
   notificationContent: {
-    flexDirection: "row",
+    flex: 1,
+    flexDirection: "column",
     flexWrap: "wrap",
     alignItems: "flex-start"
   },
@@ -91,12 +90,20 @@ const styles = StyleSheet.create({
     marginBottom: 2
   },
   errorMessage: {
+    flexDirection: "row",
+    flex: 1,
     marginBottom: 2,
     fontSize: 14
+  },
+  errorMessageContainer: {
+    flexDirection: "row",
+    flex: 1,
+    marginBottom: 2
   },
   closeButton: {
     position: "absolute",
     right: 10,
-    top: 10
+    top: 10,
+    zIndex: 999
   }
 });
