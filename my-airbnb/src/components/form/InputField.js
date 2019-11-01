@@ -4,20 +4,35 @@ import {
   StyleSheet,
   View,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
+  Animated,
+  Easing
 } from "react-native";
 import { PropTypes } from "prop-types";
 import colors from "../../styles/colors";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default class InputField extends Component {
   constructor(props) {
     super(props);
     this.state = {
       secureInput:
-        props.inputType === "text" || props.inputType === "email" ? false : true
+        props.inputType === "text" || props.inputType === "email"
+          ? false
+          : true,
+      scaleCheckmarkValue: new Animated.Value(0)
     };
     this.toggleShowPassword = this.toggleShowPassword.bind(this);
   }
+
+  scaleCheckmark(value) {
+    Animated.timing(this.state.scaleCheckmarkValue, {
+      toValue: value,
+      duration: 400,
+      easing: Easing.ease
+    }).start();
+  }
+
   toggleShowPassword() {
     this.setState({ secureInput: !this.state.secureInput });
   }
@@ -31,13 +46,24 @@ export default class InputField extends Component {
       borderBottomColor,
       inputType,
       customStyle,
-      onChangeText
+      onChangeText,
+      showCheckmark,
+      autoFocus,
+      autoCapitalize
     } = this.props;
     const fontSize = labelTextSize || 14;
     const color = labelColor || colors.white;
     const inputColor = textColor || colors.white;
     const borderBottom = borderBottomColor || "transparent";
-    const { secureInput } = this.state;
+    const { secureInput, scaleCheckmarkValue } = this.state;
+    const keyboardType = inputType === "email" ? "email-address" : "default";
+    const iconScale = scaleCheckmarkValue.interpolate({
+      inputRange: [0, 0.5, 1],
+      outputRange: [0.01, 1.6, 1]
+    });
+    const scaleValue = showCheckmark ? 1 : 0;
+    this.scaleCheckmark(scaleValue);
+
     return (
       <View style={[styles.wrapper, customStyle]}>
         <Text style={[styles.label, { fontSize }, { color }]}>{labelText}</Text>
@@ -51,6 +77,15 @@ export default class InputField extends Component {
             </Text>
           </TouchableOpacity>
         ) : null}
+        {/* 체크 아이콘 */}
+        <Animated.View
+          style={[
+            { transform: [{ scale: iconScale }] },
+            styles.checkmarkWrapper
+          ]}
+        >
+          <Icon name="check" color={colors.white} size={20} />
+        </Animated.View>
         <TextInput
           style={[
             styles.inputField,
@@ -59,6 +94,10 @@ export default class InputField extends Component {
           autoCorrect={false}
           secureTextEntry={secureInput}
           onChangeText={onChangeText}
+          keyboardType={keyboardType}
+          autoFocus={autoFocus}
+          autoCapitalize={autoCapitalize}
+          autoCorrect={false}
         />
       </View>
     );
@@ -73,7 +112,10 @@ InputField.propTypes = {
   borderBottomColor: PropTypes.string,
   inputType: PropTypes.string.isRequired,
   customStyle: PropTypes.object,
-  onChangeText: PropTypes.func
+  onChangeText: PropTypes.func,
+  showCheckmark: PropTypes.bool.isRequired,
+  autoFocus: PropTypes.bool,
+  autoCapitalize: PropTypes.bool
 };
 
 const styles = StyleSheet.create({
@@ -96,5 +138,10 @@ const styles = StyleSheet.create({
   showButtonText: {
     color: colors.white,
     fontWeight: "700"
+  },
+  checkmarkWrapper: {
+    position: "absolute",
+    right: 0,
+    bottom: 6
   }
 });
